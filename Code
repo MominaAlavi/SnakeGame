@@ -1,0 +1,132 @@
+#library
+import turtle 
+import time    
+import random  
+delay = 0.2    
+score = 0
+high_score = 0
+window = turtle.Screen()
+window.title("Snake Game by Momina!")
+window.bgcolor("black")
+window.setup(width=600, height=600)
+window.tracer(0) #to delay the screen updates and turn off turtle animations
+#Making Snake
+body = turtle.Turtle()  #assigning turtle the variable "head"
+body.speed(0)   #no animation(movement)
+body.shape("square")
+body.color("white")
+body.penup()    #to stop drawing lines
+body.goto(0,0)  #to move to absolute position
+body.direction = "stop"
+#Making Snake food
+food = turtle.Turtle()  #assigning 
+food.speed(0)
+food.shape("circle")
+food.color("red")
+food.penup()
+food.goto(0,100)
+#increasing size of snake
+parts = []
+pen = turtle.Turtle()
+pen.speed(0)
+pen.shape("square")
+pen.color("white")
+pen.penup()
+pen.hideturtle()
+pen.goto(0, 260)
+pen.write("Score: 0  High Score: 0", align="center", font=("Courier", 24, "normal"))
+#Functions
+def goUp():
+    if body.direction != "down":
+        body.direction = "up"
+def goDown():
+    if body.direction != "up":
+        body.direction = "down"
+def goLeft():
+    if body.direction != "right":
+        body.direction = "left"
+def goRight():
+    if body.direction != "left":
+        body.direction = "right"
+def move():
+    if body.direction == "up":
+        y = body.ycor()     #to return turtle's y coordinate
+        body.sety(y + 20)   #move 20 pixels ahead
+    if body.direction == "down":
+        y = body.ycor()
+        body.sety(y - 20)   #backwards
+    if body.direction == "left":
+        x = body.xcor()
+        body.setx(x - 20)
+    if body.direction == "right":
+        x = body.xcor()
+        body.setx(x + 20)
+window.listen()
+window.onkeypress(goUp, "w")    #turtle will go up when user presses "w"
+window.onkeypress(goDown, "s")
+window.onkeypress(goLeft, "a")
+window.onkeypress(goRight, "d")
+while True:
+    window.update()  #updating highscore
+    if body.xcor()>290 or body.xcor()<-290 or body.ycor()>290 or body.ycor()<-290:
+        time.sleep(1)
+        body.goto(0,0)
+        body.direction = "stop" #if snake hits the boundaries
+        # Hide the parts when hits 
+        for part in parts:
+            part.goto(1000, 1000)
+        # Clear the parts list
+        parts.clear()
+        # new game
+        score = 0
+        delay = 0.1
+        pen.clear()
+        pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal")) 
+    if body.distance(food) < 20:
+        #placing food at random places
+        x = random.randint(-290, 290)   #using "random" library
+        y = random.randint(-290, 290)
+        food.goto(x,y)
+        # Add a part to snake
+        newPart = turtle.Turtle()
+        newPart.speed(0)
+        newPart.shape("square")
+        newPart.color("white")
+        newPart.penup()
+        parts.append(newPart)
+        delay -= 0.001
+        # Increase the score
+        score += 10
+        #updating the highscore of game
+        if score > high_score:
+            high_score = score      
+        pen.clear()
+        pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal")) 
+    #orders of parts
+    for index in range(len(parts)-1, 0, -1):
+        x = parts[index-1].xcor()
+        y = parts[index-1].ycor()
+        parts[index].goto(x, y)
+    if len(parts) > 0:
+        x = body.xcor()
+        y = body.ycor()
+        parts[0].goto(x,y)
+    move()    
+    for part in parts:
+        if part.distance(body) < 20:
+            time.sleep(1)
+            body.goto(0,0)
+            body.direction = "stop"
+            for part in parts:
+                part.goto(1000, 1000)
+                #game end
+            parts.clear()
+            # Reset the score
+            score = 0
+            # Reset the delay
+            delay = 0.1
+            # Update the score display
+            pen.clear()
+            pen.write("Score: {}  High Score: {}".format(score, high_score), align="center", font=("Courier", 24, "normal"))
+    time.sleep(delay)
+window.mainloop()
